@@ -46,23 +46,17 @@ namespace MigradorRP
             cfgProdBalanca.Checked          = ConfigReader.GetConfigValue("Produtos", "importa_balanca") == "true";
             cfgProdSubPadrao.Checked        = ConfigReader.GetConfigValue("Produtos", "subcategoria_padrao") == "true";
 
-            cfgCliZeroEsquerda.Checked      = ConfigReader.GetConfigValue("Clientes", "cli_remover_zeros_esquerda") == "true";
             cfgCliShowInat.Checked          = ConfigReader.GetConfigValue("Clientes", "mostra_inativos") == "true";
-            cfgCliUsaNumero.Checked         = ConfigReader.GetConfigValue("Clientes", "usa_campo_num") == "true";
 
-            cfgFornZeroEsquerda.Checked     = ConfigReader.GetConfigValue("Fornecedores", "forn_remover_zeros_esquerda") == "true";
             cfgFornShowInat.Checked         = ConfigReader.GetConfigValue("Fornecedores", "mostra_inativos") == "true";
-            cfgFornUsaNumero.Checked         = ConfigReader.GetConfigValue("Fornecedores", "usa_campo_num") == "true";
 
             if (ConfigReader.tipoImportacao == null)
             {
                 cboEntrada.SelectedIndex= 0;
-                cboSistema.SelectedIndex = 0;
             }
             else
             {
                 cboEntrada.SelectedItem = ConfigReader.tipoImportacao.ToString();
-                cboSistema.SelectedItem = ConfigReader.sistema.ToString();
             }
 
 
@@ -104,8 +98,7 @@ namespace MigradorRP
             }
 
             ConfigReader.SaveConfig();
-            ConfigReader.sistema = cboSistema.SelectedItem.ToString();
-            ConfigReader.tipoImportacao = cboEntrada.SelectedItem.ToString();
+            ConfigReader.sistema = cboEntrada.SelectedItem.ToString();
 
             pai.Reload();
 
@@ -114,10 +107,10 @@ namespace MigradorRP
 
         private void cboEntrada_SelectedValueChanged(object sender, EventArgs e)
         {
-            if(ConfigReader.tipoImportacao != null)
+            if(ConfigReader.sistema != null)
             {
                 string searchItem = "entrada de dados";
-                if (ConfigReader.tipoImportacao != cboEntrada.SelectedItem.ToString())
+                if (ConfigReader.sistema != cboEntrada.SelectedItem.ToString())
                 {
                     confirmaAlterarModo = true;
 
@@ -135,38 +128,6 @@ namespace MigradorRP
                         alterados = newArr;
                     }
                 }
-            }
-        }
-
-        private void cboSistema_SelectedValueChanged(object sender, EventArgs e)
-        {
-
-            if (ConfigReader.sistema != null)
-            {
-                string searchItem = "sistema";
-                if (ConfigReader.sistema != cboSistema.SelectedItem.ToString())
-                {
-                    confirmaAlterarModo = true;
-                    
-                    Array.Resize(ref alterados, alterados.Length + 1);
-                    alterados[alterados.Length - 1] = searchItem;
-                }
-                else
-                {
-                    int index = Array.FindIndex(alterados, x => x.Contains(searchItem));
-                    if (index != -1)
-                    {
-                        string[] newArr = new string[alterados.Length - 1];
-                        Array.Copy(alterados, 0, newArr, 0, index);
-                        Array.Copy(alterados, index + 1, newArr, index, alterados.Length - index - 1);
-                        alterados = newArr;
-                    }
-                }
-            }
-
-            if(alterados.Length == 0)
-            {
-                confirmaAlterarModo = false;
             }
         }
 
@@ -190,18 +151,6 @@ namespace MigradorRP
         private void cfgCalcMargem_CheckStateChanged(object sender, EventArgs e)
         {
             
-        }
-
-        private void cfgCliZeroEsquerda_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig(chk, "Clientes", "cli_remover_zeros_esquerda");
-        }
-
-        private void cfgFornZeroEsquerda_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig(chk, "Fornecedores", "forn_remover_zeros_esquerda");
         }
 
         private void cfgAjustaPis_CheckStateChanged(object sender, EventArgs e)
@@ -262,16 +211,6 @@ namespace MigradorRP
             changeConfig(chk, "Produtos", "subcategoria_padrao");
         }
 
-        private void cfgCliUsaNumero_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig(chk, "Clientes", "usa_campo_num");
-        }
 
-        private void cfgFornUsaNumero_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig(chk, "Fornecedores", "usa_campo_num");
-        }
     }
 }

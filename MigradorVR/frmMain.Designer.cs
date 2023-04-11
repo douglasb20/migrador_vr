@@ -37,14 +37,8 @@
             this.lblClose = new System.Windows.Forms.Label();
             this.lblTabForn = new System.Windows.Forms.Label();
             this.imgList = new System.Windows.Forms.ImageList(this.components);
-            this.BtnFileProd = new FontAwesome.Sharp.IconButton();
             this.btnValidateFiles = new FontAwesome.Sharp.IconButton();
-            this.btnFileClient = new FontAwesome.Sharp.IconButton();
-            this.btnFileFornecedor = new FontAwesome.Sharp.IconButton();
             this.tmrBorda = new System.Windows.Forms.Timer(this.components);
-            this.fileDialogProd = new System.Windows.Forms.OpenFileDialog();
-            this.fileDialogClient = new System.Windows.Forms.OpenFileDialog();
-            this.fileDialogForn = new System.Windows.Forms.OpenFileDialog();
             this.pnlBorda = new System.Windows.Forms.Panel();
             this.btnCancelFiles = new FontAwesome.Sharp.IconButton();
             this.lblTabProd = new System.Windows.Forms.Label();
@@ -58,6 +52,10 @@
             this.btnSetSystem = new FontAwesome.Sharp.IconButton();
             this.lblAviso = new System.Windows.Forms.Label();
             this.btnImport = new FontAwesome.Sharp.IconButton();
+            this.chkProd = new System.Windows.Forms.CheckBox();
+            this.chkCliente = new System.Windows.Forms.CheckBox();
+            this.chkFornecedores = new System.Windows.Forms.CheckBox();
+            this.dirOut = new System.Windows.Forms.FolderBrowserDialog();
             this.pnlDadosImp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtGridFornecedores)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtGridClientes)).BeginInit();
@@ -73,9 +71,10 @@
             this.lblTopBar.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.lblTopBar.Name = "lblTopBar";
             this.lblTopBar.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.lblTopBar.Size = new System.Drawing.Size(915, 30);
+            this.lblTopBar.Size = new System.Drawing.Size(915, 40);
             this.lblTopBar.TabIndex = 0;
             this.lblTopBar.Text = "SISTEMA";
+            this.lblTopBar.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.lblTopBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblTopBar_MouseDown);
             this.lblTopBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lblTopBar_MouseMove);
             // 
@@ -114,27 +113,6 @@
             this.imgList.ImageSize = new System.Drawing.Size(16, 16);
             this.imgList.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // BtnFileProd
-            // 
-            this.BtnFileProd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(80)))), ((int)(((byte)(110)))));
-            this.BtnFileProd.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(85)))), ((int)(((byte)(110)))), ((int)(((byte)(155)))));
-            this.BtnFileProd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BtnFileProd.Font = new System.Drawing.Font("Poppins", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnFileProd.ForeColor = System.Drawing.Color.White;
-            this.BtnFileProd.IconChar = FontAwesome.Sharp.IconChar.FileArrowUp;
-            this.BtnFileProd.IconColor = System.Drawing.Color.White;
-            this.BtnFileProd.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.BtnFileProd.IconSize = 20;
-            this.BtnFileProd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.BtnFileProd.Location = new System.Drawing.Point(15, 50);
-            this.BtnFileProd.Name = "BtnFileProd";
-            this.BtnFileProd.Size = new System.Drawing.Size(180, 40);
-            this.BtnFileProd.TabIndex = 12;
-            this.BtnFileProd.Text = "Produtos";
-            this.BtnFileProd.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.BtnFileProd.UseVisualStyleBackColor = false;
-            this.BtnFileProd.Click += new System.EventHandler(this.BtnFileProd_Click);
-            // 
             // btnValidateFiles
             // 
             this.btnValidateFiles.AccessibleDescription = "Validar planilhas";
@@ -147,65 +125,16 @@
             this.btnValidateFiles.IconColor = System.Drawing.Color.White;
             this.btnValidateFiles.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnValidateFiles.IconSize = 20;
-            this.btnValidateFiles.Location = new System.Drawing.Point(570, 50);
+            this.btnValidateFiles.Location = new System.Drawing.Point(358, 41);
             this.btnValidateFiles.Name = "btnValidateFiles";
             this.btnValidateFiles.Size = new System.Drawing.Size(40, 40);
             this.btnValidateFiles.TabIndex = 13;
             this.btnValidateFiles.UseVisualStyleBackColor = false;
             this.btnValidateFiles.Click += new System.EventHandler(this.btnValidateFiles_Click);
             // 
-            // btnFileClient
-            // 
-            this.btnFileClient.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(80)))), ((int)(((byte)(110)))));
-            this.btnFileClient.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(85)))), ((int)(((byte)(110)))), ((int)(((byte)(155)))));
-            this.btnFileClient.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnFileClient.Font = new System.Drawing.Font("Poppins", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnFileClient.ForeColor = System.Drawing.Color.White;
-            this.btnFileClient.IconChar = FontAwesome.Sharp.IconChar.FileArrowUp;
-            this.btnFileClient.IconColor = System.Drawing.Color.White;
-            this.btnFileClient.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.btnFileClient.IconSize = 20;
-            this.btnFileClient.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnFileClient.Location = new System.Drawing.Point(200, 50);
-            this.btnFileClient.Name = "btnFileClient";
-            this.btnFileClient.Size = new System.Drawing.Size(180, 40);
-            this.btnFileClient.TabIndex = 14;
-            this.btnFileClient.Text = "Clientes";
-            this.btnFileClient.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnFileClient.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnFileClient.UseVisualStyleBackColor = false;
-            this.btnFileClient.Click += new System.EventHandler(this.btnFileClient_Click);
-            // 
-            // btnFileFornecedor
-            // 
-            this.btnFileFornecedor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(80)))), ((int)(((byte)(110)))));
-            this.btnFileFornecedor.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(85)))), ((int)(((byte)(110)))), ((int)(((byte)(155)))));
-            this.btnFileFornecedor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnFileFornecedor.Font = new System.Drawing.Font("Poppins", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnFileFornecedor.ForeColor = System.Drawing.Color.White;
-            this.btnFileFornecedor.IconChar = FontAwesome.Sharp.IconChar.FileArrowUp;
-            this.btnFileFornecedor.IconColor = System.Drawing.Color.White;
-            this.btnFileFornecedor.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.btnFileFornecedor.IconSize = 20;
-            this.btnFileFornecedor.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnFileFornecedor.Location = new System.Drawing.Point(385, 50);
-            this.btnFileFornecedor.Name = "btnFileFornecedor";
-            this.btnFileFornecedor.Size = new System.Drawing.Size(180, 40);
-            this.btnFileFornecedor.TabIndex = 15;
-            this.btnFileFornecedor.Text = "Fornecedores";
-            this.btnFileFornecedor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnFileFornecedor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnFileFornecedor.UseVisualStyleBackColor = false;
-            this.btnFileFornecedor.Click += new System.EventHandler(this.btnFileFornecedor_Click);
-            // 
             // tmrBorda
             // 
             this.tmrBorda.Interval = 1;
-            // 
-            // fileDialogProd
-            // 
-            this.fileDialogProd.Filter = "Arquivos Excel | *.xls; *.xlsx";
-            this.fileDialogProd.Title = "Selecione uma planilha";
             // 
             // pnlBorda
             // 
@@ -226,7 +155,7 @@
             this.btnCancelFiles.IconColor = System.Drawing.Color.White;
             this.btnCancelFiles.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnCancelFiles.IconSize = 20;
-            this.btnCancelFiles.Location = new System.Drawing.Point(616, 50);
+            this.btnCancelFiles.Location = new System.Drawing.Point(404, 41);
             this.btnCancelFiles.Margin = new System.Windows.Forms.Padding(0);
             this.btnCancelFiles.Name = "btnCancelFiles";
             this.btnCancelFiles.Padding = new System.Windows.Forms.Padding(2, 2, 0, 0);
@@ -446,11 +375,47 @@
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(120, 40);
             this.btnImport.TabIndex = 30;
-            this.btnImport.Text = "Importar";
+            this.btnImport.Text = "Exportar";
             this.btnImport.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnImport.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnImport.UseVisualStyleBackColor = false;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            // 
+            // chkProd
+            // 
+            this.chkProd.AutoSize = true;
+            this.chkProd.Font = new System.Drawing.Font("Poppins", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkProd.ForeColor = System.Drawing.Color.White;
+            this.chkProd.Location = new System.Drawing.Point(10, 50);
+            this.chkProd.Name = "chkProd";
+            this.chkProd.Size = new System.Drawing.Size(92, 29);
+            this.chkProd.TabIndex = 31;
+            this.chkProd.Text = "Produtos";
+            this.chkProd.UseVisualStyleBackColor = true;
+            // 
+            // chkCliente
+            // 
+            this.chkCliente.AutoSize = true;
+            this.chkCliente.Font = new System.Drawing.Font("Poppins", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkCliente.ForeColor = System.Drawing.Color.White;
+            this.chkCliente.Location = new System.Drawing.Point(110, 50);
+            this.chkCliente.Name = "chkCliente";
+            this.chkCliente.Size = new System.Drawing.Size(87, 29);
+            this.chkCliente.TabIndex = 32;
+            this.chkCliente.Text = "Clientes";
+            this.chkCliente.UseVisualStyleBackColor = true;
+            // 
+            // chkFornecedores
+            // 
+            this.chkFornecedores.AutoSize = true;
+            this.chkFornecedores.Font = new System.Drawing.Font("Poppins", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkFornecedores.ForeColor = System.Drawing.Color.White;
+            this.chkFornecedores.Location = new System.Drawing.Point(200, 50);
+            this.chkFornecedores.Name = "chkFornecedores";
+            this.chkFornecedores.Size = new System.Drawing.Size(127, 29);
+            this.chkFornecedores.TabIndex = 33;
+            this.chkFornecedores.Text = "Fornecedores";
+            this.chkFornecedores.UseVisualStyleBackColor = true;
             // 
             // frmMain
             // 
@@ -458,16 +423,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(29)))), ((int)(((byte)(39)))));
             this.ClientSize = new System.Drawing.Size(975, 700);
+            this.Controls.Add(this.chkFornecedores);
+            this.Controls.Add(this.chkCliente);
+            this.Controls.Add(this.chkProd);
             this.Controls.Add(this.btnImport);
             this.Controls.Add(this.lblAviso);
             this.Controls.Add(this.btnSetSystem);
             this.Controls.Add(this.btnMin);
             this.Controls.Add(this.pnlDadosImp);
             this.Controls.Add(this.btnCancelFiles);
-            this.Controls.Add(this.btnFileFornecedor);
-            this.Controls.Add(this.btnFileClient);
             this.Controls.Add(this.btnValidateFiles);
-            this.Controls.Add(this.BtnFileProd);
             this.Controls.Add(this.lblClose);
             this.Controls.Add(this.lblTopBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -481,6 +446,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dtGridClientes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtGridProdutos)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -489,13 +455,7 @@
         private System.Windows.Forms.Label lblTopBar;
         private System.Windows.Forms.Label lblClose;
         private System.Windows.Forms.ImageList imgList;
-        private FontAwesome.Sharp.IconButton BtnFileProd;
         private FontAwesome.Sharp.IconButton btnValidateFiles;
-        private FontAwesome.Sharp.IconButton btnFileClient;
-        private FontAwesome.Sharp.IconButton btnFileFornecedor;
-        private System.Windows.Forms.OpenFileDialog fileDialogProd;
-        private System.Windows.Forms.OpenFileDialog fileDialogClient;
-        private System.Windows.Forms.OpenFileDialog fileDialogForn;
         private System.Windows.Forms.Panel pnlBorda;
         private System.Windows.Forms.Panel pnlDadosImp;
         private System.Windows.Forms.Label lblTabForn;
@@ -511,6 +471,10 @@
         private System.Windows.Forms.Label lblAviso;
         private FontAwesome.Sharp.IconButton btnImport;
         private System.Windows.Forms.Label lblRegistros;
+        private System.Windows.Forms.CheckBox chkProd;
+        private System.Windows.Forms.CheckBox chkCliente;
+        private System.Windows.Forms.CheckBox chkFornecedores;
+        private System.Windows.Forms.FolderBrowserDialog dirOut;
     }
 }
 

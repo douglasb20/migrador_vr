@@ -27,7 +27,7 @@ namespace MigradorRP
                 this.Paint += new PaintEventHandler(Element_Paint);
                 tmrBorda.Tick += new EventHandler(DesignAndActions.timer1_Tick);
 
-                lblTopBar.Text = titulo.ToString() + " | MigradorRP";
+                lblTopBar.Text = titulo.ToString() + " | MigradorVR";
 
             }
             catch (Exception ex)
@@ -67,16 +67,11 @@ namespace MigradorRP
             {
                 ConfigReader.LoadConfig(pathConfig);
                 ConnectionPG.Connect();
-                string textFilter = "Arquivos Excel | *.xls; *.xlsx";
-                string titleDialog = "Selecione uma planilha para importar no sistema";
 
                 ToolTip toolBtValidate = new ToolTip();
                 toolBtValidate.SetToolTip(btnValidateFiles, "Validar planilhas");
                 toolBtValidate.SetToolTip(btnCancelFiles, "Remover planilhas");
                 toolBtValidate.SetToolTip(btnSetSystem, "Configurações do migrador");
-                toolBtValidate.SetToolTip(BtnFileProd, "Escolha uma planilha de produtos");
-                toolBtValidate.SetToolTip(btnFileClient, "Escolha uma planilha de clientes");
-                toolBtValidate.SetToolTip(btnFileFornecedor, "Escolha uma planilha de fornecedores");
                 toolBtValidate.InitialDelay = 250;
 
                 lblTabClient.MouseEnter += new EventHandler(DesignAndActions.lblMouseEnter);
@@ -87,15 +82,6 @@ namespace MigradorRP
 
                 lblTabForn.MouseEnter   += new EventHandler(DesignAndActions.lblMouseEnter);
                 lblTabForn.MouseLeave   += new EventHandler(DesignAndActions.lblMouseOut);
-
-                fileDialogProd.Filter       = textFilter;
-                fileDialogProd.Title        = titleDialog;
-
-                fileDialogClient.Filter     = textFilter;
-                fileDialogClient.Title      = titleDialog;
-
-                fileDialogForn.Filter       = textFilter;
-                fileDialogForn.Title        = titleDialog;
 
                 btnCancelFiles.Enabled      = false;
                 btnCancelFiles.IconColor    = Color.FromArgb(24, 24, 24);
@@ -150,79 +136,10 @@ namespace MigradorRP
             Funcoes.moverForm(this);
         }
 
-        private void BtnFileProd_Click(object sender, EventArgs e)
-        {
-            IconButton btn = (IconButton)sender;
-
-            if (fileDialogProd.ShowDialog() == DialogResult.OK)
-            {
-                btn.Text = fileDialogProd.SafeFileName.Length > 15 ? fileDialogProd.SafeFileName.Substring(0,15) + "..." : fileDialogProd.SafeFileName;
-                btn.IconChar = IconChar.FileCircleCheck;
-            }
-            else
-            {
-                btn.Text = "Produtos...";
-                btn.IconChar = IconChar.FileArrowUp;
-                fileDialogProd.FileName = "";
-            }
-            
-        }
-
-        private void btnFileClient_Click(object sender, EventArgs e)
-        {
-            IconButton btn = (IconButton)sender;
-
-            if (fileDialogClient.ShowDialog() == DialogResult.OK)
-            {
-                btn.Text = fileDialogClient.SafeFileName.Length > 15 ? fileDialogClient.SafeFileName.Substring(0, 15) + "..." : fileDialogClient.SafeFileName;
-                btn.IconChar = IconChar.FileCircleCheck;
-            }
-            else
-            {
-                btn.Text                    = "Clientes...";
-                btn.IconChar                = IconChar.FileArrowUp;
-                fileDialogClient.FileName   = "";
-            }
-
-        }
-
-        private void btnFileFornecedor_Click(object sender, EventArgs e)
-        {
-            IconButton btn = (IconButton)sender;
-
-            if (fileDialogForn.ShowDialog() == DialogResult.OK)
-            {
-                btn.Text = fileDialogForn.SafeFileName.Length > 15 ? fileDialogForn.SafeFileName.Substring(0, 15) + "..." : fileDialogForn.SafeFileName;
-                btn.IconChar = IconChar.FileCircleCheck;
-            }
-            else
-            {
-                btn.Text = "Fornecedores...";
-                btn.IconChar = IconChar.FileArrowUp;
-                fileDialogForn.FileName = "";
-            }
-
-        }
-
         private void btnCancelFiles_Click(object sender, EventArgs e)
         {
             try
             {
-
-                BtnFileProd.Enabled = true;
-                BtnFileProd.Text = "Produtos";
-                fileDialogProd.FileName = "";
-                BtnFileProd.IconChar = IconChar.FileArrowUp;
-
-                btnFileClient.Enabled = true;
-                btnFileClient.Text = "Clientes";
-                btnFileClient.IconChar = IconChar.FileArrowUp;
-                fileDialogClient.FileName = "";
-
-                btnFileFornecedor.Enabled = true;
-                btnFileFornecedor.Text = "Fornecedores";
-                btnFileFornecedor.IconChar = IconChar.FileArrowUp;
-                fileDialogForn.FileName = "";
 
                 btnValidateFiles.Enabled = true;
                 btnValidateFiles.IconColor = Color.White;
@@ -313,17 +230,13 @@ namespace MigradorRP
         {
             try
             {
-                if (fileDialogProd.FileName == "" && fileDialogClient.FileName == "" && fileDialogForn.FileName == "")
+                if (!chkCliente.Checked && !chkProd.Checked && !chkFornecedores.Checked)
                 {
-                    throw new Exception("Nenhum arquivo foi selecionado");
+                    throw new Exception("Nenhuma opção de exportação foi selecionado");
                 }
 
                 btnValidateFiles.Enabled    = false;
                 btnValidateFiles.IconColor  = Color.FromArgb(24, 24, 24);
-
-                BtnFileProd.Enabled         = false;
-                btnFileClient.Enabled       = false;
-                btnFileFornecedor.Enabled   = false;
 
                 btnCancelFiles.Enabled      = true;
                 btnCancelFiles.IconColor    = Color.White;
@@ -334,7 +247,7 @@ namespace MigradorRP
                 Label firstTab              = null;
                 DataGridView gridLoad       = null;
 
-                if ( !string.IsNullOrEmpty( fileDialogProd.FileName ) )
+                if ( chkProd.Checked )
                 {
                     await CarregaTabelaProdutos();
                     carregaProd = true;
@@ -342,7 +255,7 @@ namespace MigradorRP
                     gridLoad    = dtGridProdutos;
                 }
 
-                if(!string.IsNullOrEmpty(fileDialogClient.FileName))
+                if(chkCliente.Checked)
                 {
                     await CarregaTabelaClientes();
                     carregaClient = true;
@@ -353,7 +266,7 @@ namespace MigradorRP
                     }
                 }
 
-                if (!string.IsNullOrEmpty(fileDialogForn.FileName))
+                if (chkFornecedores.Checked)
                 {
                     await CarregaTabelaFornecedores();
                     carregaForn = true;
@@ -388,26 +301,16 @@ namespace MigradorRP
                 lblAviso.Text = "Carregando Produtos, aguarde...";
                 await Task.Run(() =>
                 {
+                    MateriaisPGDAO materiais = new MateriaisPGDAO();
+                    DataTable produtos = materiais.ExportaProdutos();
+                    produtos.TableName = "produtos";
 
-                    string abrir = String.Format(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{0}';Extended Properties='Excel 12.0 Xml;HDR=YES;ReadOnly=True';", fileDialogProd.FileName);
-
-                    OleDbConnection con = new OleDbConnection(abrir);
-                    con.Open();
-
-                    DataTable dt = con.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-
-                    string planilha = dt.Rows[0]["TABLE_NAME"].ToString();
-
-
-                    OleDbDataAdapter da = new OleDbDataAdapter($"SELECT * FROM [{planilha}] " + (ConfigReader.GetConfigValue("Produtos", "mostra_inativos") == "true" ? "" : "WHERE ativo=true ")  + ";", con);
-                    da.Fill(Tabelas, "produtos");
+                    Tabelas.Tables.Add(produtos);
 
                     dtGridProdutos.Invoke((MethodInvoker)delegate
                     {
                         dtGridProdutos.DataSource = Tabelas.Tables["produtos"];
                     });
-
-                    con.Close();
 
                 });
 
@@ -430,25 +333,15 @@ namespace MigradorRP
                 lblAviso.Text = "Carregando Clientes, aguarde...";
                 await Task.Run(() =>
                 {
-
-                    string abrir = String.Format(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{0}';Extended Properties='Excel 12.0 Xml;HDR=YES;ReadOnly=True';", fileDialogClient.FileName);
-
-                    OleDbConnection con = new OleDbConnection(abrir);
-                    con.Open();
-
-                    DataTable dt = con.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-
-                    string planilha = dt.Rows[0]["TABLE_NAME"].ToString();
-
-                    OleDbDataAdapter da = new OleDbDataAdapter($"SELECT * FROM [{planilha}] " + (ConfigReader.GetConfigValue("Clientes", "mostra_inativos") == "true" ? "" : "WHERE ativo=true ") + ";", con);
-                    da.Fill(Tabelas, "clientes");
+                    ClientesPGDAO clientes = new ClientesPGDAO();
+                    DataTable clients = clientes.ExportaClientes();
+                    clients.TableName = "clientes";
+                    Tabelas.Tables.Add(clients);
 
                     dtGridProdutos.Invoke((MethodInvoker)delegate
                     {
                         dtGridClientes.DataSource = Tabelas.Tables["clientes"];
                     });
-
-                    con.Close();
 
                 });
 
@@ -468,25 +361,15 @@ namespace MigradorRP
                 await Task.Run(() =>
                 {
 
-                    string abrir = String.Format(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{0}';Extended Properties='Excel 12.0 Xml;HDR=YES;ReadOnly=True';", fileDialogForn.FileName);
-
-                    OleDbConnection con = new OleDbConnection(abrir);
-                    con.Open();
-
-                    DataTable dt = con.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-
-                    string planilha = dt.Rows[0]["TABLE_NAME"].ToString();
-
-
-                    OleDbDataAdapter da = new OleDbDataAdapter($"SELECT * FROM [{planilha}] " + (ConfigReader.GetConfigValue("Fornecedores", "mostra_inativos") == "true" ? "" : "WHERE ativo=true ") + ";", con);
-                    da.Fill(Tabelas, "fornecedores");
+                    FornecedorPGDAO fornecedor= new FornecedorPGDAO();
+                    DataTable forns = fornecedor.ExportaFornecedores();
+                    forns.TableName = "fornecedores";
+                    Tabelas.Tables.Add(forns);
 
                     dtGridProdutos.Invoke((MethodInvoker)delegate
                     {
                         dtGridFornecedores.DataSource = Tabelas.Tables["fornecedores"];
                     });
-
-                    con.Close();
 
                 });
 
@@ -533,21 +416,21 @@ namespace MigradorRP
                     AjeitaTela();
                     lblAviso.Show();
 
-                    if (!string.IsNullOrEmpty(fileDialogProd.FileName))
-                    {
-                        lblAviso.Text = "Importando Produtos, aguarde...";
-                        await ImportaProdutos();
-                    }
-                    if (!string.IsNullOrEmpty(fileDialogClient.FileName))
-                    {
-                        lblAviso.Text = "Importando Clientes, aguarde...";
-                        await ImportaClientes();
-                    }
-                    if (!string.IsNullOrEmpty(fileDialogForn.FileName))
-                    {
-                        lblAviso.Text = "Importando Fornecedores, aguarde...";
-                        await ImportaFornecedores();
-                    }
+                    //if (!string.IsNullOrEmpty(fileDialogProd.FileName))
+                    //{
+                    //    lblAviso.Text = "Importando Produtos, aguarde...";
+                    //    await ImportaProdutos();
+                    //}
+                    //if (!string.IsNullOrEmpty(fileDialogClient.FileName))
+                    //{
+                    //    lblAviso.Text = "Importando Clientes, aguarde...";
+                    //    await ImportaClientes();
+                    //}
+                    //if (!string.IsNullOrEmpty(fileDialogForn.FileName))
+                    //{
+                    //    lblAviso.Text = "Importando Fornecedores, aguarde...";
+                    //    await ImportaFornecedores();
+                    //}
 
                     lblAviso.Text = "Importação realizada com sucesso.";
                 }
