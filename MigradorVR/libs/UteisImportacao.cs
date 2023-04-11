@@ -6,6 +6,9 @@ using System.Data;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Numerics;
+using System.Windows;
+using System.IO;
+using System.Text;
 
 namespace MigradorRP.libs
 {
@@ -204,168 +207,56 @@ namespace MigradorRP.libs
             {
                 await Task.Run(() =>
                 {
-                    MateriaisPGDAO materiais = new MateriaisPGDAO();
-                    EstoqueMateriaisPGDAO estoqueMaterial = new EstoqueMateriaisPGDAO();
+
                     try
                     {
-                        ConnectionPG.BeginTransaction();
-
-                        List<Dictionary<string, dynamic>> produtosFormatado  = new List<Dictionary<string, dynamic>>();
-                        List<Dictionary<string, dynamic>> estoqueFormatado   = new List<Dictionary<string, dynamic>>();
-
-                        Dictionary<string, string> campos = new Dictionary<string, string>()
-                        {
-                            {"id_prod_int"      , "mat_001"},
-                            {"id_emp"           , "emp_001"},
-                            {"desc_pro"         , "mat_003"},
-                            {"codbar"           , "mat_004"},
-                            {"refer"            , "cod_ref"},
-                            {"unidade"          , "uni_001"},
-                            {"mtp_001"          , "mtp_001"},
-                            {"mat_009"          , "mat_009"},
-                            {"status"           , "sit_001"},
-                            {"custo"            , "mat_012"},
-                            {"venda"            , "mat_008"},
-                            {"margem"           , "mat_018"},
-                            {"categ"            , "cat_001"},
-                            {"subcat"           , "sub_001"},
-                            {"setor"            , "id_setor"},
-                            {"origem"           , "orm_codigo"},
-                            {"csosn"            , "cso_codigo"},
-                            {"cfop"             , "cfop_consumidor"},
-                            {"icms"             , "icms"},
-                            {"cst"              , "cst_consumidor"},
-                            {"pis"              , "pis_codigo_saida"},
-                            {"cofins"           , "cof_codigo_saida"},
-                            {"cest"             , "cest"},
-                            {"ncm"              , "ncm"},
-                            {"ativa_balanca"    , "b_exporta_peso_balanca" },
-                            {"fracionado"       , "b_permite_frac" }
-                        };
 
                         int i = 1;
-                        
+
+
+                        File.WriteAllText(Path.Combine(ConfigReader.saidaPath, "Produtos CSV.csv"), "");
+                        StringBuilder csv = new StringBuilder();
                         foreach (DataRow row in produtos)
                         {
-
-                            ValidaLinha(row);
-
-                            dynamic subCat  = "";
-                            string codigo   = (i).ToString();
-                            string desc     = Funcoes.TiraAcento(row["nome_produto"].ToString().Trim());
-
-                            string codean   =  ConfigReader.GetConfigValue("Produtos", "prod_remover_zeros_esquerda") == "true" 
-                                ? row["codigo"].ToString().Trim().TrimStart('0') 
-                                : row["codigo"].ToString().Trim();
-
-                            string refer    = ConfigReader.GetConfigValue("Produtos", "prod_remover_zeros_esquerda") == "true" 
-                                ? row["referencia"].ToString().Trim().TrimStart('0') 
-                                : row["referencia"].ToString().Trim();
-
-                            int unidade     = undRet(row["unidade"].ToString().Trim());
-                            string estoque  = row["quantidade"].ToString().Replace(",",".") == "" ? "0" : row["quantidade"].ToString().Replace(",", ".");
-                            string custo    = (row["compra"].ToString().Trim().Replace(",", "."));
-                            string venda    = (row["venda"].ToString().Trim().Replace(",", "."));
-
-                            string margem = ConfigReader.GetConfigValue("Produtos", "calcular_margem") == "true" ?
-                                (((Convert.ToDouble(venda.Replace(".", ",")) / Convert.ToDouble(custo.Replace(".", ","))) - 1) * 100).ToString().Replace(",", ".")
-                                : row["margem"].ToString().Replace(",", ".");
-
-                            int categ = row["categoria"].ToString().Trim() == "" ? catRet("Padrao") : catRet(row["categoria"].ToString().Trim());
-                            int csosn = row["csosn"].ToString().Trim() == "" ? 102 : Convert.ToInt32(row["csosn"].ToString());
-
-                            string cfop = ConfigReader.GetConfigValue("Produtos", "ajusta_cfop_csosn") == "true" ?
-                                (csosn == 102 ? "5102" : "5405") :
-                                row["cfop"].ToString();
-
-                            int cst             = row["cst"].ToString().Trim() == "" ? (csosn == 102  ? 0 : 60) : Convert.ToInt32(row["cst"].ToString().Trim());
-                            int pis             = csosn == 102 ? 99 : 04;
-                            int cofins          = csosn == 102 ? 99 : 04;
-                            string cest         = row["cest"].ToString().Trim();
-                            string ncm          = row["ncm"].ToString().Trim();
-                            bool ativa_balanca  = false;
-
-                            if(ConfigReader.GetConfigValue("Produtos","subcategoria_padrao") != "true")
-                            {
-                                if (row["subcategoria"].ToString().Trim() != "")
-                                {
-                                    subCat = sbcatRet(row["subcategoria"].ToString().Trim());
-                                }
-                            }
-                            else
-                            {
-                                subCat = sbcatRet("Padrao");
-                            }
-                    
-                            if(ConfigReader.GetConfigValue("Produtos", "importa_balanca") == "true" && row["unidade"].ToString().Trim() == "KG")
-                            {
-                                ativa_balanca = true;
-                            }
-
-                            Dictionary<string, dynamic> prods = new Dictionary<string, dynamic>()
-                            {
-                                { campos["id_prod_int"].ToString()      , codigo },
-                                { campos["codbar"].ToString()           , codean },
-                                { campos["id_emp"].ToString()           , "1" },
-                                { campos["desc_pro"].ToString()         , desc },
-                                { campos["unidade"].ToString()          , unidade },
-                                { campos["mtp_001"].ToString()          , 1 },
-                                { campos["mat_009"].ToString()          , 0 },
-                                { campos["status"].ToString()           , 4},
-                                { campos["custo"].ToString()            , custo },
-                                { campos["venda"].ToString()            , venda },
-                                { campos["margem"].ToString()           , margem },
-                                { campos["categ"].ToString()            , categ },
-                                { campos["subcat"].ToString()           , subCat },
-                                { campos["setor"].ToString()            , 1 },
-                                { campos["origem"].ToString()           , 0 },
-                                { campos["cfop"].ToString()             , cfop },
-                                { campos["csosn"].ToString()            , csosn },
-                                { campos["icms"].ToString()             , 12.00 },
-                                { campos["cst"].ToString()              , cst },
-                                { campos["pis"].ToString()              , pis },
-                                { campos["cofins"].ToString()           , cofins },
-                                { campos["cest"].ToString()             , cest },
-                                { campos["ncm"].ToString()              , ncm },
-                                { campos["ativa_balanca"].ToString()    , ativa_balanca },
+                            dynamic[] linha = {
+                                ++i, 
+                                row["desc_pro"],
+                                'N', 
+                                row["csosn"].ToString() == "500" ? "2" : "1",
+                                row["ncm"],
+                                row["unidade"],
+                                row["custo"],
+                                row["venda"],
+                                row["margem"],
+                                row["codbar"],
+                                "",
+                                row["categ"],
+                                "",
+                                "",
+                                "",
+                                "",
+                                (ConfigReader.GetConfigValue("Produtos", "importa_quantidade") == "true" ? row["estoque"] : ""),
+                                "",
+                                "",
+                                "",
+                                "",
+                                row["cest"],
+                                "",
+                                row["b_exporta_peso_balanca"]  == "true" ? "1" : "0",
+                                "0",
+                                "",
+                                "",
+                                "",
                             };
 
-                            if(ConfigReader.sistema == "LeStore")
-                            {
-                                prods.Add(campos["refer"].ToString(), refer);
-                            }
-                            if(ConfigReader.sistema == "LeCheff")
-                            {
-                                prods.Add(campos["fracionado"].ToString(), true);
-                            }
-
-                            produtosFormatado.Add(prods);
-
-                            estoqueFormatado.Add(new Dictionary<string, dynamic>()
-                            {
-                                {"id_material"  , codigo},
-                                {"id_setor"     , 1},
-                                {"id_empresa"   , 1},
-                                {"quantidade"   , estoque},
-                            });
-
-                            i++;
+                            
+                            string newLine = string.Join(";", linha);
+                            csv.AppendLine(newLine);
                         }
-
-                        materiais.LimpaTudoAntes();
-                        materiais.InsertMultiplos(produtosFormatado);
-
-                        if(ConfigReader.GetConfigValue("Produtos", "importa_quantidade") == "true")
-                        {
-                            estoqueMaterial.InsertMultiplos(estoqueFormatado);
-                        }
-
-                        ConnectionPG.Commit();
-
+                        File.WriteAllText(Path.Combine(ConfigReader.saidaPath, "Produtos CSV.csv"), csv.ToString());
                     }
                     catch (Exception ex)
                     {
-                        ConnectionPG.Rollback();
                         throw ex;
                     }
 

@@ -9,7 +9,6 @@ namespace MigradorRP
         private frmMain pai = null;
         public bool canCloseApp = false;
         private bool confirmaAlterarModo = false;
-        private string[] alterados= { };
         public frmConfigImportacao(frmMain pai = null)
         {
             InitializeComponent();
@@ -35,7 +34,6 @@ namespace MigradorRP
             }
             ConfigReader.ReloadConfig();
 
-
             cfgImpQtd.Checked               = ConfigReader.GetConfigValue("Produtos", "importa_quantidade") == "true";
             cfgzProdZerosEsquerda.Checked   = ConfigReader.GetConfigValue("Produtos","prod_remover_zeros_esquerda") == "true";
             cfgCalcMargem.Checked           = ConfigReader.GetConfigValue("Produtos", "calcular_margem") == "true";
@@ -50,13 +48,13 @@ namespace MigradorRP
 
             cfgFornShowInat.Checked         = ConfigReader.GetConfigValue("Fornecedores", "mostra_inativos") == "true";
 
-            if (ConfigReader.tipoImportacao == null)
+            if (ConfigReader.sistema == null)
             {
                 cboEntrada.SelectedIndex= 0;
             }
             else
             {
-                cboEntrada.SelectedItem = ConfigReader.tipoImportacao.ToString();
+                cboEntrada.SelectedItem = ConfigReader.sistema.ToString();
             }
 
 
@@ -91,7 +89,7 @@ namespace MigradorRP
         {
             if(confirmaAlterarModo)
             {
-                if(MessageBox.Show("Deseja alterar a configuração de " + string.Join( " e ", alterados) + "?", pai.titulo, MessageBoxButtons.YesNo,MessageBoxIcon.Question) != DialogResult.Yes)
+                if(MessageBox.Show("Deseja alterar a configuração da entrada de dados?", pai.titulo, MessageBoxButtons.YesNo,MessageBoxIcon.Question) != DialogResult.Yes)
                 {
                     return;
                 }
@@ -101,6 +99,7 @@ namespace MigradorRP
             ConfigReader.sistema = cboEntrada.SelectedItem.ToString();
 
             pai.Reload();
+            if(confirmaAlterarModo) pai.btnCancelFiles.PerformClick();
 
             this.Dispose();
         }
@@ -109,24 +108,13 @@ namespace MigradorRP
         {
             if(ConfigReader.sistema != null)
             {
-                string searchItem = "entrada de dados";
                 if (ConfigReader.sistema != cboEntrada.SelectedItem.ToString())
                 {
                     confirmaAlterarModo = true;
-
-                    Array.Resize(ref alterados, alterados.Length + 1);
-                    alterados[alterados.Length - 1] = searchItem;
                 }
                 else
                 {
-                    int index = Array.FindIndex(alterados, x => x.Contains(searchItem));
-                    if (index != -1)
-                    {
-                        string[] newArr = new string[alterados.Length - 1];
-                        Array.Copy(alterados, 0, newArr, 0, index);
-                        Array.Copy(alterados, index + 1, newArr, index, alterados.Length - index - 1);
-                        alterados = newArr;
-                    }
+                    confirmaAlterarModo= false;
                 }
             }
         }

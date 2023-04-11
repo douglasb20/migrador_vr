@@ -1,5 +1,4 @@
-﻿using FontAwesome.Sharp;
-using MigradorRP.libs;
+﻿using MigradorRP.libs;
 using MigradorRP.libs.DAOSPG;
 using Npgsql;
 using System;
@@ -10,7 +9,6 @@ using System.Data.OleDb;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -147,6 +145,10 @@ namespace MigradorRP
                 btnCancelFiles.Enabled = false;
                 btnCancelFiles.IconColor = Color.FromArgb(24, 24, 24);
 
+                chkFornecedores.Enabled= true;
+                chkCliente.Enabled= true;
+                chkProd.Enabled= true;
+
                 dtGridProdutos.DataSource = null;
                 dtGridClientes.DataSource = null;
                 dtGridFornecedores.DataSource = null;
@@ -240,6 +242,10 @@ namespace MigradorRP
 
                 btnCancelFiles.Enabled      = true;
                 btnCancelFiles.IconColor    = Color.White;
+
+                chkCliente.Enabled      = false;
+                chkProd.Enabled         = false;
+                chkFornecedores.Enabled = false;
 
                 bool carregaProd            = false;
                 bool carregaClient          = false;
@@ -411,21 +417,32 @@ namespace MigradorRP
         {
             try
             {
-                if(Funcoes.ChamaAlerta("Deseja começar a fazer a importação?", "question") == DialogResult.Yes)
+                if (dirOut.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                else
+                {
+                    ConfigReader.saidaPath = dirOut.SelectedPath;
+                }
+
+                if(Funcoes.ChamaAlerta("Deseja começar a fazer a exportação?", "question") == DialogResult.Yes)
                 {
                     AjeitaTela();
                     lblAviso.Show();
 
-                    //if (!string.IsNullOrEmpty(fileDialogProd.FileName))
-                    //{
-                    //    lblAviso.Text = "Importando Produtos, aguarde...";
-                    //    await ImportaProdutos();
-                    //}
+                    if (chkProd.Checked)
+                    {
+                        lblAviso.Text = "Exportando Produtos, aguarde...";
+                        await ExportaProdutos();
+                    }
+
                     //if (!string.IsNullOrEmpty(fileDialogClient.FileName))
                     //{
                     //    lblAviso.Text = "Importando Clientes, aguarde...";
                     //    await ImportaClientes();
                     //}
+
                     //if (!string.IsNullOrEmpty(fileDialogForn.FileName))
                     //{
                     //    lblAviso.Text = "Importando Fornecedores, aguarde...";
@@ -445,7 +462,7 @@ namespace MigradorRP
             }
         }
 
-        private async Task ImportaProdutos()
+        private async Task ExportaProdutos()
         {
             try
             {
