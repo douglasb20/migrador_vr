@@ -10,20 +10,6 @@ namespace MigradorRP.libs
             this.tabela = "fornecedor";
         }
 
-        public void LimpaTudoAntes()
-        {
-            try
-            {
-                string query = "delete from fornecedor; ALTER TABLE fornecedor DROP CONSTRAINT IF EXISTS fk_fornecedor_cidade";
-
-                this.ExecuteNonQuery(query);
-            }
-            catch(Exception err)
-            {
-                throw err;
-            }
-        }
-
         public DataTable ExportaFornecedores()
         {
             try
@@ -51,7 +37,8 @@ namespace MigradorRP.libs
                                 "email as emailnfe, " +
                                 "'' as nome_contador, " +
                                 "'' as email_contador " +
-                                "from fornecedor";
+                                "from fornecedor"+
+                                (ConfigReader.GetConfigValue("Clientes", "mostra_inativos") == "true" ? "" : " where id_situacao = '4'");
                 return this.ExecuteQuery(query);
             }
             catch(Exception err)

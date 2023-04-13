@@ -35,14 +35,8 @@ namespace MigradorRP
             ConfigReader.ReloadConfig();
 
             cfgImpQtd.Checked               = ConfigReader.GetConfigValue("Produtos", "importa_quantidade") == "true";
-            cfgzProdZerosEsquerda.Checked   = ConfigReader.GetConfigValue("Produtos","prod_remover_zeros_esquerda") == "true";
-            cfgCalcMargem.Checked           = ConfigReader.GetConfigValue("Produtos", "calcular_margem") == "true";
-            cfgAjustaPis.Checked            = ConfigReader.GetConfigValue("Produtos", "ajusta_pis_csosn") == "true";
-            cfgAjustaCofins.Checked         = ConfigReader.GetConfigValue("Produtos", "ajusta_cofins_csosn") == "true";
-            cfgAjustaCfop.Checked           = ConfigReader.GetConfigValue("Produtos", "ajusta_cfop_csosn") == "true";
             cfgProdShowInat.Checked         = ConfigReader.GetConfigValue("Produtos", "mostra_inativos") == "true";
             cfgProdBalanca.Checked          = ConfigReader.GetConfigValue("Produtos", "importa_balanca") == "true";
-            cfgProdSubPadrao.Checked        = ConfigReader.GetConfigValue("Produtos", "subcategoria_padrao") == "true";
 
             cfgCliShowInat.Checked          = ConfigReader.GetConfigValue("Clientes", "mostra_inativos") == "true";
 
@@ -124,33 +118,10 @@ namespace MigradorRP
             ConfigReader.SetConfigValue(section, config, chk.Checked ? "true" : "false");
         }
 
-        private void cfgzProdZerosEsquerda_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig( chk, "Produtos", "prod_remover_zeros_esquerda");
-        }
-
         private void cfgImpQtd_Change(object sender, EventArgs e)
         {
             CheckBox chk = (CheckBox)sender;
             changeConfig(chk, "Produtos", "importa_quantidade");
-        }
-
-        private void cfgCalcMargem_CheckStateChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void cfgAjustaPis_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig(chk, "Produtos", "ajusta_pis_csosn");
-        }
-
-        private void cfgAjustaCofins_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig(chk, "Produtos", "ajusta_cofins_csosn");
         }
 
         private void cfgProdShowInat_CheckStateChanged(object sender, EventArgs e)
@@ -171,12 +142,6 @@ namespace MigradorRP
             changeConfig(chk, "Fornecedores", "mostra_inativos");
         }
 
-        private void cfgAjustaCfop_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig(chk, "Produtos", "ajusta_cfop_csosn");
-        }
-
         private void lblTopBar_MouseMove(object sender, MouseEventArgs e)
         {
             Funcoes.moverForm(this);
@@ -191,12 +156,6 @@ namespace MigradorRP
         {
             CheckBox chk = (CheckBox)sender;
             changeConfig(chk, "Produtos", "importa_balanca");
-        }
-
-        private void cfgProdSubPadrao_CheckStateChanged(object sender, EventArgs e)
-        {
-            CheckBox chk = (CheckBox)sender;
-            changeConfig(chk, "Produtos", "subcategoria_padrao");
         }
 
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -436,20 +437,31 @@ namespace MigradorRP
                         lblAviso.Text = "Exportando Produtos, aguarde...";
                         await ExportaProdutos();
                     }
+                    if(chkCliente.Checked && chkFornecedores.Checked)
+                    {
+                        DataTable dtMerged = new DataTable();
+                        dtMerged = Tabelas.Tables["clientes"].Copy();
+                        dtMerged.Merge(Tabelas.Tables["fornecedores"]);
+                        await ExportaClientesFornecedores(dtMerged);
+                    }
+                    else
+                    {
+                        if (chkCliente.Checked)
+                        {
+                            lblAviso.Text = "Exportanto Clientes, aguarde...";
+                            await ExportaClientes();
+                        }
 
-                    //if (!string.IsNullOrEmpty(fileDialogClient.FileName))
-                    //{
-                    //    lblAviso.Text = "Importando Clientes, aguarde...";
-                    //    await ImportaClientes();
-                    //}
+                        if (chkFornecedores.Checked)
+                        {
+                            lblAviso.Text = "Exportando Fornecedores, aguarde...";
+                            await ExportaFornecedores();
+                        }
+                    }
 
-                    //if (!string.IsNullOrEmpty(fileDialogForn.FileName))
-                    //{
-                    //    lblAviso.Text = "Importando Fornecedores, aguarde...";
-                    //    await ImportaFornecedores();
-                    //}
 
-                    lblAviso.Text = "Importação realizada com sucesso.";
+                    lblAviso.Text = "Exportação realizada com sucesso.";
+                    Process.Start("explorer.exe", ConfigReader.saidaPath);
                 }
 
             }catch(NpgsqlException err)
@@ -473,25 +485,38 @@ namespace MigradorRP
             }
         }
 
-        private async Task ImportaClientes()
+        private async Task ExportaClientes()
         {
             try
             {
-                await UteisImportacao.PreparaClientes(Tabelas.Tables["clientes"].Rows);
+                await UteisImportacao.PreparaClientesFornecedores(Tabelas.Tables["clientes"].Rows, "Clientes");
             }catch(Exception err)
             {
                 throw err; 
             }
         }
-        private async Task ImportaFornecedores()
+
+        private async Task ExportaFornecedores()
         {
             try
             {
-                await UteisImportacao.PreparaFornecedores(Tabelas.Tables["fornecedores"].Rows);
+                await UteisImportacao.PreparaClientesFornecedores(Tabelas.Tables["fornecedores"].Rows, "Fornecedores");
             }catch(Exception err)
             {
                 throw err; 
             }
         }
+        
+        private async Task ExportaClientesFornecedores(DataTable dtMerged)
+        {
+            try
+            {
+                await UteisImportacao.PreparaClientesFornecedores(dtMerged.Rows);
+            }catch(Exception err)
+            {
+                throw err; 
+            }
+        }
+
     }
 }

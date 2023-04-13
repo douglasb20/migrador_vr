@@ -54,167 +54,18 @@ namespace MigradorRP.libs
             }
         }
 
-        private static int undRet(string und)
-        {
-            try
-            {
-                UnidadesPGDAO unidades = new UnidadesPGDAO();
-
-                DataRowCollection uniBD = unidades.GetQuery($"uni_003='{und}' ").ReadAsCollection();
-                int uniCod;
-
-                if (uniBD.Count == 0)
-                {
-                    uniBD = unidades.GetQuery("", " uni_001 desc", "1").ReadAsCollection();
-
-                    int ultreg = uniBD.Count == 0 ? 1 : Int32.Parse(uniBD[0]["uni_001"].ToString()) + 1;
-                    string dt = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.fff");
-
-                    try
-                    {
-                        Dictionary<string, dynamic> bindUnid = new Dictionary<string, dynamic>()
-                        {
-                            {"uni_001", ultreg},
-                            {"emp_001", 1},
-                            {"uni_002", und},
-                            {"uni_003", und},
-                            {"sit_001", 4},
-                            {"usu_001_1", 1 },
-                            {"dat_001_1", dt},
-
-                        };
-
-                        unidades.Insert(bindUnid);
-                        uniCod = ultreg;
-                    }
-                    catch (NpgsqlException e)
-                    {
-                        throw e;
-                    }
-                }
-                else
-                {
-                    uniCod = Int32.Parse(uniBD[0]["uni_001"].ToString());
-                }
-                return uniCod;
-            }
-            catch(NpgsqlException ex) {
-                throw new Exception($"Erro de Unidade na unidade {und}: {ex.Message}");
-            }catch(Exception ex)
-            {
-                throw new Exception($"Erro de Unidade na unidade {und}: {ex.Message}");
-            }
-            
-        }
-
-        public static int catRet(string cat)
-        {
-            CategoriaPGDAO categoria = new CategoriaPGDAO();
-            try
-            {
-                int catCod = 0;
-                if (cat != "")
-                {
-                    DataRowCollection catBD = categoria.GetQuery($"cat_002='{cat.ToUpper()}' ").ReadAsCollection();
-
-                    if (catBD.Count == 0)
-                    {
-                        catBD = categoria.GetQuery(""," cat_001 desc","1").ReadAsCollection();
-                        int ultreg = catBD.Count == 0 ? 1 : Int32.Parse(catBD[0]["cat_001"].ToString()) + 1;
-                        string dt = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.fff");
-
-                        Dictionary<string, dynamic> bindCat = new Dictionary<string, dynamic>()
-                        {
-                            {"cat_001", ultreg},
-                            {"emp_001", 1},
-                            {"cat_002", cat.ToUpper()},
-                            {"sit_001", 4},
-                            {"usu_001_1", 1},
-                            {"dat_001_1", dt },
-                            {"cat_003", 1},
-                            {"b_exibir_icone", false},
-
-                        };
-
-                        categoria.Insert(bindCat);
-                        catCod = ultreg;
-
-                    }
-                    else
-                    {
-                        catCod = Int32.Parse(catBD[0]["cat_001"].ToString());
-                    }
-                }
-
-                return catCod;
-            }
-            catch (NpgsqlException ex)
-            {
-                throw new Exception($"Erro de Categoria: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erro de Categoria: {ex.Message}");
-            }
-            
-        }
-
-        private static int sbcatRet(string sbcat)
-        {
-            SubcategoriaPGDAO subcategoria = new SubcategoriaPGDAO();
-            try
-            {
-                int sbcatCod = 0;
-                DataRowCollection sbcatBD = subcategoria.GetQuery($"sub_002='{sbcat.ToUpper()}' ").ReadAsCollection();
-
-                if (sbcatBD.Count == 0)
-                {
-                    sbcatBD = subcategoria.GetQuery(""," sub_001 desc","1").ReadAsCollection();
-
-                    int ultreg = sbcatBD.Count == 0 ? 1 : Int32.Parse(sbcatBD[0]["sub_001"].ToString()) + 1;
-                    string dt = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.fff");
-
-                    Dictionary<string, dynamic> bindSbCat = new Dictionary<string, dynamic>()
-                    {
-                        {"sub_001", ultreg},
-                        {"emp_001", 1},
-                        {"sub_002", sbcat.ToUpper()},
-                        {"sit_001", 4}
-                    };
-
-                    subcategoria.Insert(bindSbCat);
-                    sbcatCod = ultreg;
-                }
-                else
-                {
-                    sbcatCod = Int32.Parse(sbcatBD[0]["sub_001"].ToString());
-                }
-
-                return sbcatCod;
-            }catch(NpgsqlException ex)
-            {
-                throw new Exception($"Erro de SubCategoria: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erro de SubCategoria: {ex.Message}");
-            }
-            
-        }
         public async static Task PreparaProdutos(DataRowCollection produtos)
         {
             try
             {
                 await Task.Run(() =>
                 {
-
                     try
                     {
 
                         int i = 1;
-
-
-                        File.WriteAllText(Path.Combine(ConfigReader.saidaPath, "Produtos CSV.csv"), "");
+                        string filename = $"Produtos_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_CSV.csv";
+                        File.WriteAllText(Path.Combine(ConfigReader.saidaPath, filename), "");
                         StringBuilder csv = new StringBuilder();
                         foreach (DataRow row in produtos)
                         {
@@ -242,7 +93,7 @@ namespace MigradorRP.libs
                                 "",
                                 row["cest"],
                                 "",
-                                row["b_exporta_peso_balanca"]  == "true" ? "1" : "0",
+                                row["b_exporta_peso_balanca"].ToString()  == "true" ? "1" : "0",
                                 "0",
                                 "",
                                 "",
@@ -253,154 +104,22 @@ namespace MigradorRP.libs
                             string newLine = string.Join(";", linha);
                             csv.AppendLine(newLine);
                         }
-                        File.WriteAllText(Path.Combine(ConfigReader.saidaPath, "Produtos CSV.csv"), csv.ToString());
+                        File.WriteAllText(Path.Combine(ConfigReader.saidaPath, filename), csv.ToString());
                     }
-                    catch (Exception ex)
+                    catch (Exception err)
                     {
-                        throw ex;
-                    }
-
-                });
-            }catch(Exception ex)
-            {
-                throw ex;
-            }
-
-        }
-
-        public async static Task PreparaClientes(DataRowCollection clientes)
-        {
-            try
-            {
-                await Task.Run(() =>
-                {
-                    try
-                    {
-                        ClientesPGDAO clientesDB = new ClientesPGDAO();
-                        List<Dictionary<string, dynamic>> clientesFormatado = new List<Dictionary<string, dynamic>>();
-
-                        ConnectionPG.BeginTransaction();
-                    
-
-                        var campos = new Dictionary<string, string>()
-                        {
-                            {"id_cli"   , "cli_001"},
-                            {"id_emp"   , "emp_001"},
-                            {"razao"    , "cli_002"},
-                            {"fant"     , "cli_003"},
-                            {"cnpj"     , "cli_004"},
-                            {"rgie"     , "cli_005"},
-                            {"sit_ie"   , "situacao_ie"},
-                            {"endereco" , "cep_004"},
-                            {"numero"   , "cli_008"},
-                            {"bairro"   , "cep_003"},
-                            {"cidade"   , "cidade_desc"},
-                            {"cidibge"  , "cid_001"},
-                            {"uf"       , "uf"},
-                            {"comple"   , "cli_009"},
-                            {"cep"      , "cep_002"},
-                            {"tel1"     , "cli_012"},
-                            {"tel2"     , "cli_013"},
-                            {"dtcad"    , "dat_001_1"},
-                            {"saldo"    , "saldo_atual"},
-                            {"limite"   , "limite_credito"},
-                            {"email"    , "email"},
-                            {"tipo"     , "tipo_pessoa"},
-                            {"sexo"     , "sexo"},
-                            {"status"   , "sit_001" }
-                        };
-
-                        int i = 1;
-                        foreach (DataRow cliente in clientes)
-                        {
-                            string codean = ConfigReader.GetConfigValue("Clientes", "cli_remover_zeros_esquerda") == "true"  
-                                 ? cliente["codigo"].ToString().TrimStart('0')
-                                 : cliente["codigo"].ToString();
-
-                            string fant = Funcoes.TiraAcento(cliente["fantasia"].ToString().Replace(";", ""));
-
-                            string endereco;
-                            string numero;
-
-                            if (ConfigReader.GetConfigValue("Clientes", "usa_campo_num") == "true")
-                            {
-                                endereco = Funcoes.TiraAcento(cliente["endereco"].ToString());
-                                numero   = Funcoes.TiraAcento(cliente["numero"].ToString());
-                            }
-                            else
-                            {
-                                string[] end    = Endereco(Funcoes.TiraAcento(cliente["endereco"].ToString()));
-                                endereco        = end[0];
-                                numero          = end[1];
-                            }
-
-                            string comp     = Funcoes.TiraAcento(cliente["complemento"].ToString().Replace(";", ""));
-                            string bairro   = Funcoes.TiraAcento(cliente["bairro"].ToString().Replace(";", ""));
-                            string cidade   = Funcoes.TiraAcento(cliente["cidade"].ToString().Replace(";", ""));
-                            string cidibge  = IbgeRet(cidade).ToString();
-                            string uf       = cliente["uf"].ToString();
-                            string cep      = Regex.Replace(cliente["cep"].ToString(), @"[^\d]+", "");
-                            string cnpj     = Regex.Replace( cliente["cnpj_cpf"].ToString(), @"[^\d]+", "");
-                            string rgie     = Regex.Replace(cliente["rg_ie"].ToString(), @"[^\d]+", "");
-                            string sit_ie   = cnpj.Length == 14 ? (rgie.Length == 0 ? "N" : "C") : "N";
-                            string razao    = cliente["razao_social"].ToString().Length == 0 ? fant : Funcoes.TiraAcento(cliente["fantasia"].ToString());
-                            string fone1    = Regex.Replace(cliente["fone1"].ToString(), @"[^\d]+", "");
-                            string fone2    = Regex.Replace(cliente["fone2"].ToString(), @"[^\d]+", "");
-                            string email    = cliente["email"].ToString();
-                            string tipo     = cnpj.Length == 14 ? "J" : "F";
-                            string dt       = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-
-                            clientesFormatado.Add(new Dictionary<string, dynamic>()
-                            {
-                                {campos["id_cli"]   , i },
-                                {campos["id_emp"]   , 1 },
-                                {campos["razao"]    , razao },
-                                {campos["fant"]     , fant},
-                                {campos["cnpj"]     , cnpj },
-                                {campos["rgie"]     , rgie },
-                                {campos["sit_ie"]   , sit_ie },
-                                {campos["endereco"] , endereco },
-                                {campos["numero"]   , numero },
-                                {campos["bairro"]   , bairro },
-                                {campos["cidade"]   , cidade },
-                                {campos["cidibge"]  , cidibge },
-                                {campos["uf"]       , uf },
-                                {campos["comple"]   , comp },
-                                {campos["cep"]      , cep },
-                                {campos["tel1"]     , fone1 },
-                                {campos["tel2"]     , fone2 },
-                                {campos["dtcad"]    , dt },
-                                {campos["saldo"]    , 0.00 },
-                                {campos["limite"]   , 0.00 },
-                                {campos["email"]    , email },
-                                {campos["tipo"]     , tipo },
-                                {campos["sexo"]     , "N" },
-                                {campos["status"]   , 4 },
-                            });
-
-                            i++;
-                        }
-
-                        clientesDB.TiraAcentoBD();
-                        clientesDB.LimpaTudoAntes();
-                        clientesDB.InsertMultiplos(clientesFormatado);
-
-                        ConnectionPG.Commit();
-                    }catch(Exception err)
-                    {
-                        ConnectionPG.Rollback();
                         throw err;
                     }
+
                 });
-            }catch(NpgsqlException err)
-            {
-                throw err;
             }catch(Exception err)
             {
                 throw err;
             }
+
         }
-        public async static Task PreparaFornecedores(DataRowCollection fornecedores)
+
+        public async static Task PreparaClientesFornecedores(DataRowCollection clientes, string modo = "Clientes_Fornecedores")
         {
             try
             {
@@ -408,85 +127,47 @@ namespace MigradorRP.libs
                 {
                     try
                     {
-                        FornecedorPGDAO fornecedoresDB = new FornecedorPGDAO();
-                        List<Dictionary<string, dynamic>> fornecedoresFormatado = new List<Dictionary<string, dynamic>>();
-
-                        ConnectionPG.BeginTransaction();
+                        string filename = $"{modo}_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_CSV.csv";
+                        File.WriteAllText(Path.Combine(ConfigReader.saidaPath, filename), "");
+                        StringBuilder csv = new StringBuilder();
 
                         int i = 1;
-                        foreach (DataRow fornecedor in fornecedores)
+                        foreach (DataRow row in clientes)
                         {
-                            string codean = ConfigReader.GetConfigValue("Clientes", "cli_remover_zeros_esquerda") == "true"  
-                                 ? fornecedor["codigo"].ToString().TrimStart('0')
-                                 : fornecedor["codigo"].ToString();
+                            dynamic[] linha = {
+                                ++i,
+                                row["razao"],
+                                row["cnpj_cpf"].ToString(),
+                                row["rg_ie"],
+                                row["endereco"],
+                                row["numero"],
+                                row["comple"],
+                                row["bairro"],
+                                row["cidade"],
+                                row["uf"],
+                                row["cep"],
+                                row["tel1"],
+                                row["tel2"],
+                                row["dt_nasc"],
+                                row["tipo"],
+                                row["cnpj_cpf"].ToString().Length > 11? "J" : "F",
+                                row["fant"],
+                                row["email"],
+                                row["contato"],
+                                row["obs"],
+                                row["emailnfe"],
+                                row["nome_contador"],
+                                row["email_contador"]
+                            };
 
-                            string fant = Funcoes.TiraAcento(fornecedor["fantasia"].ToString().Replace(";", ""));
 
-                            string endereco;
-                            string numero;
-
-                            if (ConfigReader.GetConfigValue("Fornecedores", "usa_campo_num") == "true")
-                            {
-                                endereco = Funcoes.TiraAcento(fornecedor["endereco"].ToString());
-                                numero   = Funcoes.TiraAcento(fornecedor["numero"].ToString());
-                            }
-                            else
-                            {
-                                string[] end    = Endereco(Funcoes.TiraAcento(fornecedor["endereco"].ToString()));
-                                endereco        = end[0];
-                                numero          = end[1];
-                            }
-
-                            string comp     = Funcoes.TiraAcento(fornecedor["complemento"].ToString().Replace(";", ""));
-                            string bairro   = Funcoes.TiraAcento(fornecedor["bairro"].ToString().Replace(";", ""));
-                            string cidade   = Funcoes.TiraAcento(fornecedor["cidade"].ToString().Replace(";", ""));
-                            string cidibge  = IbgeRet(cidade).ToString();
-                            string uf       = fornecedor["uf"].ToString();
-                            string cep      = Regex.Replace(fornecedor["cep"].ToString(), @"[^\d]+", "");
-                            string cnpj     = Regex.Replace( fornecedor["cnpj_cpf"].ToString(), @"[^\d]+", "");
-                            string rgie     = Regex.Replace(fornecedor["rg_ie"].ToString(), @"[^\d]+", "");
-                            string sit_ie   = cnpj.Length == 14 ? (rgie.Length == 0 ? "N" : "C") : "N";
-                            string razao    = fornecedor["razao_social"].ToString().Length == 0 ? fant : Funcoes.TiraAcento(fornecedor["fantasia"].ToString());
-                            string fone1    = Regex.Replace(fornecedor["fone1"].ToString(), @"[^\d]+", "");
-                            string fone2    = Regex.Replace(fornecedor["fone2"].ToString(), @"[^\d]+", "");
-                            string email    = fornecedor["email"].ToString();
-                            string tipo     = cnpj.Length == 14 ? "J" : "F";
-                            string dt       = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-
-                            fornecedoresFormatado.Add(new Dictionary<string, dynamic>()
-                            {
-                                {"id_fornecedor"        , i++},
-                                {"nome_fantasia"        , fant},
-                                {"razao_social"         , razao},
-                                {"cnpj"                 , cnpj},
-                                {"inscricao_estadual"   , rgie},
-                                {"id_usuario_cadastro"  , 1},
-                                {"id_empresa"           , 1},
-                                {"endereco_logradouro"  , endereco},
-                                {"endereco_numero"      , numero},
-                                {"endereco_bairro"      , bairro},
-                                {"endereco_cidade"      , cidade},
-                                {"endereco_uf"          , uf},
-                                {"endereco_cep"         , cep},
-                                {"endereco_complemento" , comp},
-                                {"telefone1"            , fone1},
-                                {"telefone2"            , fone2},
-                                {"email"                , email},
-                                {"data_cadastro"        , dt},
-                                {"tipo_pessoa"          , tipo},
-                                {"id_situacao"          , 4},
-                                {"id_cidade"            , cidibge},
-                            }); 
+                            string newLine = string.Join(";", linha);
+                            csv.AppendLine(newLine);
                         }
-
-                        fornecedoresDB.TiraAcentoBD();
-                        fornecedoresDB.LimpaTudoAntes();
-                        fornecedoresDB.InsertMultiplos(fornecedoresFormatado);
-
-                        ConnectionPG.Commit();
-                    }catch(Exception err)
+                        File.WriteAllText(Path.Combine(ConfigReader.saidaPath, filename), csv.ToString());
+                    }
+                    catch(Exception err)
                     {
-                        ConnectionPG.Rollback();
                         throw err;
                     }
                 });
