@@ -28,7 +28,7 @@ namespace MigradorRP.libs
         {
             string query = "select " +
                         "mat_003 as desc_pro," +
-                        "'N' as tipo, " +
+                        "'N'::varchar as tipo, " +
                         "ncm ," +
                         "(select uni_003 from unidades as u where u.uni_001 = m.uni_001) as unidade," +
                         "mat_012 as custo," +

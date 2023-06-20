@@ -13,10 +13,10 @@ namespace MigradorRP.libs.DAOSPG
         private static NpgsqlTransaction transaction;
         public static void Connect()
         {
-            string dbBase = ConfigReader.sistema == "LeCheff" ? "RP" : "SOFTMOBILE";
-            string host = ConfigReader.GetConfigValue("PgDatabase", "pgdbhost");
-            string dbuser = ConfigReader.GetConfigValue("PgDatabase", "pgdbuser");
-            string porta = ConfigReader.GetConfigValue("PgDatabase", "pgdbport");
+            string dbBase   = ConfigReader.sistema == "LeCheff" ? "RP" : "SOFTMOBILE";
+            string host     = ConfigReader.GetConfigValue("PgDatabase", "pgdbhost");
+            string dbuser   = ConfigReader.GetConfigValue("PgDatabase", "pgdbuser");
+            string porta    = ConfigReader.GetConfigValue("PgDatabase", "pgdbport");
             string password = ConfigReader.GetConfigValue("PgDatabase", "pgdbpwd");
 
 
