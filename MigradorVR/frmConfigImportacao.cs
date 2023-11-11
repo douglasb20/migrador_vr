@@ -92,7 +92,7 @@ namespace MigradorRP
             ConfigReader.SaveConfig();
             ConfigReader.sistema = cboEntrada.SelectedItem.ToString();
 
-            pai.Reload();
+            pai.Reload(canCloseApp);
             if(confirmaAlterarModo) pai.btnCancelFiles.PerformClick();
 
             this.Dispose();

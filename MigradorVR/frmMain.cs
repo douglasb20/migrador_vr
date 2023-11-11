@@ -65,7 +65,7 @@ namespace MigradorRP
             try
             {
                 ConfigReader.LoadConfig(pathConfig);
-                ConnectionPG.Connect();
+                //ConnectionPG.Connect();
 
                 ToolTip toolBtValidate = new ToolTip();
                 toolBtValidate.SetToolTip(btnValidateFiles, "Validar planilhas");
@@ -105,9 +105,16 @@ namespace MigradorRP
             }
         }
 
-        public void Reload()
+        public void Reload(bool firstAction)
         {
-            ConnectionPG.ReConnect();
+            if (firstAction)
+            {
+                ConnectionPG.Connect();
+            }
+            else
+            {
+                ConnectionPG.ReConnect();
+            }
         }
 
         private void lblClose_Click(object sender, EventArgs e)
