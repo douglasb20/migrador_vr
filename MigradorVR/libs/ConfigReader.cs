@@ -9,6 +9,7 @@ namespace MigradorRP
         private static ConfigParser config;
         private static string filePath;
         public static string sistema = null;
+        public static string saida = null;
         public static string saidaPath = null;
 
         public static void LoadConfig(string fileName)

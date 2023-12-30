@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MigradorRP.Properties {
+namespace ExportadorAutomatec.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

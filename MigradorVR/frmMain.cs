@@ -13,7 +13,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace MigradorRP
 {
     public partial class frmMain : Form
@@ -26,7 +25,7 @@ namespace MigradorRP
                 this.Paint += new PaintEventHandler(Element_Paint);
                 tmrBorda.Tick += new EventHandler(DesignAndActions.timer1_Tick);
 
-                lblTopBar.Text = titulo.ToString() + " | MigradorVR";
+                lblTopBar.Text = titulo.ToString() + " | ExportadorAutomatec";
 
             }
             catch (Exception ex)
@@ -65,7 +64,6 @@ namespace MigradorRP
             try
             {
                 ConfigReader.LoadConfig(pathConfig);
-                //ConnectionPG.Connect();
 
                 ToolTip toolBtValidate = new ToolTip();
                 toolBtValidate.SetToolTip(btnValidateFiles, "Validar planilhas");
@@ -89,6 +87,9 @@ namespace MigradorRP
                 pnlDadosImp.Hide();
                 lblAviso.Hide();
                 btnImport.Hide();
+                cboFileMode.Items.Add("CSV");
+                cboFileMode.Items.Add("Excel");
+                cboFileMode.SelectedIndex= 0;
 
                 this.Height = 250;
 
@@ -240,6 +241,7 @@ namespace MigradorRP
         {
             try
             {
+                
                 if (!chkCliente.Checked && !chkProd.Checked && !chkFornecedores.Checked)
                 {
                     throw new Exception("Nenhuma opção de exportação foi selecionado");
@@ -320,7 +322,7 @@ namespace MigradorRP
                     produtos.TableName = "produtos";
 
                     Tabelas.Tables.Add(produtos);
-
+                    
                     dtGridProdutos.Invoke((MethodInvoker)delegate
                     {
                         dtGridProdutos.DataSource = Tabelas.Tables["produtos"];
@@ -485,8 +487,9 @@ namespace MigradorRP
         {
             try
             {
-                await UteisImportacao.PreparaProdutos(Tabelas.Tables["produtos"].Rows);
-            }catch(Exception err)
+                await UteisImportacao.PreparaProdutos(Tabelas.Tables["produtos"], cboFileMode.SelectedItem.ToString() == "CSV");
+            }
+            catch (Exception err)
             {
                 throw err; 
             }
@@ -496,7 +499,7 @@ namespace MigradorRP
         {
             try
             {
-                await UteisImportacao.PreparaClientesFornecedores(Tabelas.Tables["clientes"].Rows, "Clientes");
+                await UteisImportacao.PreparaClientesFornecedores(Tabelas.Tables["clientes"], cboFileMode.SelectedItem.ToString() == "CSV", "Clientes");
             }catch(Exception err)
             {
                 throw err; 
@@ -507,7 +510,7 @@ namespace MigradorRP
         {
             try
             {
-                await UteisImportacao.PreparaClientesFornecedores(Tabelas.Tables["fornecedores"].Rows, "Fornecedores");
+                await UteisImportacao.PreparaClientesFornecedores(Tabelas.Tables["fornecedores"], cboFileMode.SelectedItem.ToString() == "CSV", "Fornecedores");
             }catch(Exception err)
             {
                 throw err; 
@@ -518,12 +521,11 @@ namespace MigradorRP
         {
             try
             {
-                await UteisImportacao.PreparaClientesFornecedores(dtMerged.Rows);
+                await UteisImportacao.PreparaClientesFornecedores(dtMerged, cboFileMode.SelectedItem.ToString() == "CSV");
             }catch(Exception err)
             {
                 throw err; 
             }
         }
-
     }
 }

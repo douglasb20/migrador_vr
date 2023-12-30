@@ -1,14 +1,11 @@
 ﻿using MigradorRP.libs.DAOSPG;
 using Npgsql;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using System.Numerics;
-using System.Windows;
 using System.IO;
 using System.Text;
+using OfficeOpenXml;
 
 namespace MigradorRP.libs
 {
@@ -17,44 +14,7 @@ namespace MigradorRP.libs
 
         // FUNÇÕES UTEIS PARA O BANCO
 
-        private static string[] Endereco(string text)
-        {
-            string[] gAddress   = new string[2];
-            int indexVirgula    = text.Contains(",") ? text.LastIndexOf(",") : 0;
-
-            if(indexVirgula > 0)
-            {
-                gAddress[0] = text.Substring(0, indexVirgula);
-                gAddress[1] = text.Substring(++indexVirgula);
-            }
-            else
-            {
-                gAddress[0] = text;
-                gAddress[1] = "S/N";
-            }
-            return gAddress;
-        }
-        private static int IbgeRet(string cidade)
-        {
-            try
-            {
-                int ibgeCod;
-                CidadesPGDAO cidades = new CidadesPGDAO();
-                DataRowCollection cidadeBD = cidades.GetQuery($" cid_002 = '{cidade.ToUpper()}' ").ReadAsCollection();
-
-                return ibgeCod = cidadeBD.Count == 0 ? 0 : Convert.ToInt32(cidadeBD[0]["cid_001"].ToString());
-            }
-            catch (NpgsqlException err)
-            {
-                throw err;
-            }
-            catch (Exception err)
-            {
-                throw err;
-            }
-        }
-
-        public async static Task PreparaProdutos(DataRowCollection produtos)
+        public async static Task PreparaProdutos(DataTable dt, bool isCSV)
         {
             try
             {
@@ -63,16 +23,26 @@ namespace MigradorRP.libs
                     try
                     {
 
+                        DataRowCollection produtos = dt.Rows;
+                        string filename;
+                        
+                        if (!isCSV)
+                        {
+                            filename = $"Produtos_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}.xlsx";
+                            WriteToExcel(Path.Combine(ConfigReader.saidaPath, filename), dt, "Produtos");
+                            return;
+                        }
+
                         int i = 1;
-                        string filename = $"Produtos_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_CSV.csv";
+                        filename = $"Produtos_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_CSV.csv";
                         File.WriteAllText(Path.Combine(ConfigReader.saidaPath, filename), "");
                         StringBuilder csv = new StringBuilder();
                         foreach (DataRow row in produtos)
                         {
                             dynamic[] linha = {
-                                ++i, 
+                                ++i,
                                 row["desc_pro"],
-                                'N', 
+                                'N',
                                 row["csosn"].ToString() == "500" ? "2" : "1",
                                 row["ncm"],
                                 row["unidade"],
@@ -100,11 +70,13 @@ namespace MigradorRP.libs
                                 "",
                             };
 
-                            
+
                             string newLine = string.Join(";", linha);
                             csv.AppendLine(newLine);
                         }
                         File.WriteAllText(Path.Combine(ConfigReader.saidaPath, filename), csv.ToString());
+                        
+                        
                     }
                     catch (Exception err)
                     {
@@ -119,7 +91,7 @@ namespace MigradorRP.libs
 
         }
 
-        public async static Task PreparaClientesFornecedores(DataRowCollection clientes, string modo = "Clientes_Fornecedores")
+        public async static Task PreparaClientesFornecedores(DataTable dt, bool isCSV, string modo = "Clientes_Fornecedores")
         {
             try
             {
@@ -127,7 +99,17 @@ namespace MigradorRP.libs
                 {
                     try
                     {
-                        string filename = $"{modo}_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_CSV.csv";
+                        DataRowCollection clientes = dt.Rows;
+                        string filename;
+                        
+                        if (!isCSV)
+                        {
+                            filename = $"{modo}_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}.xlsx";
+                            WriteToExcel(Path.Combine(ConfigReader.saidaPath, filename), dt, modo);
+                            return;
+                        }
+
+                        filename = $"{modo}_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_CSV.csv";
                         File.WriteAllText(Path.Combine(ConfigReader.saidaPath, filename), "");
                         StringBuilder csv = new StringBuilder();
 
@@ -171,9 +153,6 @@ namespace MigradorRP.libs
                         throw err;
                     }
                 });
-            }catch(NpgsqlException err)
-            {
-                throw err;
             }catch(Exception err)
             {
                 throw err;
@@ -220,6 +199,21 @@ namespace MigradorRP.libs
                 "  AND cio.Operacao__Codigo = 500) AS subquery" + 
                 "  ON subquery.ClasseImposto = produto.ClasseImposto__Ide" + 
                 "order by cast(produto.codigo as INT)";
+        }
+
+        private static void WriteToExcel(string path, DataTable dt, string sheetName)
+        {
+
+            // let's convert our object data to Datatable for a simplified logic.
+            // Datatable is the easiest way to deal with complex datatypes for easy reading and formatting. 
+            FileInfo filePath = new FileInfo(path);
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (var excelPack = new ExcelPackage(filePath))
+            {
+                var ws = excelPack.Workbook.Worksheets.Add(sheetName);
+                ws.Cells.LoadFromDataTable(dt, true);
+                excelPack.Save();
+            }
         }
     }
 }

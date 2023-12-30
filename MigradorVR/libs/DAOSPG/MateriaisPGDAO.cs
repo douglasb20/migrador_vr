@@ -26,8 +26,11 @@ namespace MigradorRP.libs
 
         public DataTable ExportaProdutos()
         {
-            string query = "select " +
-                        "mat_003 as desc_pro," +
+
+            string query = "select ";
+            if (ConfigReader.saida == "VR")
+            {
+                query += "mat_003 as desc_pro," +
                         "'N'::varchar as tipo, " +
                         "ncm ," +
                         "(select uni_003 from unidades as u where u.uni_001 = m.uni_001) as unidade," +
@@ -42,6 +45,30 @@ namespace MigradorRP.libs
                         "b_exporta_peso_balanca " +
                         "from materiais as m " +
                         (ConfigReader.GetConfigValue("Produtos", "mostra_inativos") == "true" ? "" : "where sit_001 = '4'");
+            }
+            if (ConfigReader.saida == "Genérico")
+            {
+                query += "mat_001 as id," +
+                        "mat_003 as desc_pro," +
+                        "'N'::varchar as tipo, " +
+                        "ncm ," +
+                        "(select uni_003 from unidades as u where u.uni_001 = m.uni_001) as unidade," +
+                        "mat_012 as custo," +
+                        "mat_008 as venda," +
+                        "mat_018 as margem," +
+                        "mat_004 as codbar," +
+                        "(SELECT cat_002 from categoria as c where c.cat_001 = m.cat_001) as categ," +
+                        "(SELECT quantidade from setor_estoque_material as sem where sem.id_material = m.mat_001) as estoque, " +
+                        "cest, " +
+                        "cso_codigo as csosn," +
+                        "cfop_consumidor as cfop," +
+                        "cst_consumidor as cst," +
+                        "pis_codigo_saida as pis," +
+                        "cof_codigo_saida as cofins," +
+                        "b_exporta_peso_balanca " +
+                        "from materiais as m " +
+                        (ConfigReader.GetConfigValue("Produtos", "mostra_inativos") == "true" ? "" : "where sit_001 = '4'");
+            }
 
             return this.ExecuteQuery(query);
         }

@@ -37,15 +37,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cboEntrada = new System.Windows.Forms.ComboBox();
             this.pnlConfigOptions = new System.Windows.Forms.Panel();
-            this.cfgProdBalanca = new System.Windows.Forms.CheckBox();
             this.cfgFornShowInat = new System.Windows.Forms.CheckBox();
             this.cfgCliShowInat = new System.Windows.Forms.CheckBox();
             this.cfgProdShowInat = new System.Windows.Forms.CheckBox();
+            this.cfgProdBalanca = new System.Windows.Forms.CheckBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.cboSaida = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.pnlConfigOptions.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -82,7 +84,7 @@
             this.lblTopBar.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.lblTopBar.Size = new System.Drawing.Size(450, 30);
             this.lblTopBar.TabIndex = 23;
-            this.lblTopBar.Text = "Configuraçao de importação";
+            this.lblTopBar.Text = "Configuraçao de sistema";
             this.lblTopBar.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblTopBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblTopBar_MouseDown);
             this.lblTopBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lblTopBar_MouseMove);
@@ -138,7 +140,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Poppins", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(99, 47);
+            this.label1.Location = new System.Drawing.Point(10, 43);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(155, 28);
             this.label1.TabIndex = 28;
@@ -153,7 +155,7 @@
             this.cboEntrada.Items.AddRange(new object[] {
             "LeCheff",
             "LeStore"});
-            this.cboEntrada.Location = new System.Drawing.Point(101, 78);
+            this.cboEntrada.Location = new System.Drawing.Point(12, 74);
             this.cboEntrada.Name = "cboEntrada";
             this.cboEntrada.Size = new System.Drawing.Size(150, 31);
             this.cboEntrada.TabIndex = 27;
@@ -175,19 +177,6 @@
             this.pnlConfigOptions.Name = "pnlConfigOptions";
             this.pnlConfigOptions.Size = new System.Drawing.Size(360, 310);
             this.pnlConfigOptions.TabIndex = 31;
-            // 
-            // cfgProdBalanca
-            // 
-            this.cfgProdBalanca.AutoSize = true;
-            this.cfgProdBalanca.Font = new System.Drawing.Font("Poppins", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cfgProdBalanca.ForeColor = System.Drawing.Color.White;
-            this.cfgProdBalanca.Location = new System.Drawing.Point(98, 46);
-            this.cfgProdBalanca.Name = "cfgProdBalanca";
-            this.cfgProdBalanca.Size = new System.Drawing.Size(117, 29);
-            this.cfgProdBalanca.TabIndex = 43;
-            this.cfgProdBalanca.Text = "Usa balança";
-            this.cfgProdBalanca.UseVisualStyleBackColor = true;
-            this.cfgProdBalanca.CheckStateChanged += new System.EventHandler(this.cfgProdBalanca_CheckStateChanged);
             // 
             // cfgFornShowInat
             // 
@@ -228,6 +217,35 @@
             this.cfgProdShowInat.UseVisualStyleBackColor = true;
             this.cfgProdShowInat.CheckStateChanged += new System.EventHandler(this.cfgProdShowInat_CheckStateChanged);
             // 
+            // cfgProdBalanca
+            // 
+            this.cfgProdBalanca.AutoSize = true;
+            this.cfgProdBalanca.Font = new System.Drawing.Font("Poppins", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cfgProdBalanca.ForeColor = System.Drawing.Color.White;
+            this.cfgProdBalanca.Location = new System.Drawing.Point(98, 46);
+            this.cfgProdBalanca.Name = "cfgProdBalanca";
+            this.cfgProdBalanca.Size = new System.Drawing.Size(117, 29);
+            this.cfgProdBalanca.TabIndex = 43;
+            this.cfgProdBalanca.Text = "Usa balança";
+            this.cfgProdBalanca.UseVisualStyleBackColor = true;
+            this.cfgProdBalanca.CheckStateChanged += new System.EventHandler(this.cfgProdBalanca_CheckStateChanged);
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.White;
+            this.panel1.Location = new System.Drawing.Point(0, 170);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(360, 1);
+            this.panel1.TabIndex = 45;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.White;
+            this.panel2.Location = new System.Drawing.Point(0, 97);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(360, 1);
+            this.panel2.TabIndex = 44;
+            // 
             // label5
             // 
             this.label5.Font = new System.Drawing.Font("Poppins", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -261,21 +279,31 @@
             this.label3.Text = "Produtos";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // panel2
+            // cboSaida
             // 
-            this.panel2.BackColor = System.Drawing.Color.White;
-            this.panel2.Location = new System.Drawing.Point(0, 97);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(360, 1);
-            this.panel2.TabIndex = 44;
+            this.cboSaida.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSaida.Font = new System.Drawing.Font("Poppins", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboSaida.FormattingEnabled = true;
+            this.cboSaida.ItemHeight = 23;
+            this.cboSaida.Items.AddRange(new object[] {
+            "VR",
+            "Genérico"});
+            this.cboSaida.Location = new System.Drawing.Point(196, 74);
+            this.cboSaida.Name = "cboSaida";
+            this.cboSaida.Size = new System.Drawing.Size(150, 31);
+            this.cboSaida.TabIndex = 32;
+            this.cboSaida.SelectedValueChanged += new System.EventHandler(this.cboSaida_SelectedValueChanged);
             // 
-            // panel1
+            // label2
             // 
-            this.panel1.BackColor = System.Drawing.Color.White;
-            this.panel1.Location = new System.Drawing.Point(0, 170);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(360, 1);
-            this.panel1.TabIndex = 45;
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Poppins", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.White;
+            this.label2.Location = new System.Drawing.Point(201, 43);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(138, 28);
+            this.label2.TabIndex = 33;
+            this.label2.Text = "Saída de dados";
             // 
             // frmConfigImportacao
             // 
@@ -284,6 +312,8 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(54)))), ((int)(((byte)(54)))), ((int)(((byte)(54)))));
             this.ClientSize = new System.Drawing.Size(358, 438);
             this.ControlBox = false;
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.cboSaida);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cboEntrada);
             this.Controls.Add(this.btnCancelCLose);
@@ -324,5 +354,7 @@
         private System.Windows.Forms.CheckBox cfgProdBalanca;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.ComboBox cboSaida;
+        private System.Windows.Forms.Label label2;
     }
 }

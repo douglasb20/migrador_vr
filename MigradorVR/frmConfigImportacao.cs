@@ -45,10 +45,12 @@ namespace MigradorRP
             if (ConfigReader.sistema == null)
             {
                 cboEntrada.SelectedIndex= 0;
+                cboSaida.SelectedIndex= 0;
             }
             else
             {
                 cboEntrada.SelectedItem = ConfigReader.sistema.ToString();
+                cboSaida.SelectedItem = ConfigReader.saida.ToString();
             }
 
 
@@ -83,7 +85,7 @@ namespace MigradorRP
         {
             if(confirmaAlterarModo)
             {
-                if(MessageBox.Show("Deseja alterar a configuração da entrada de dados?", pai.titulo, MessageBoxButtons.YesNo,MessageBoxIcon.Question) != DialogResult.Yes)
+                if(MessageBox.Show("Deseja alterar a configuração da entrada de dados?", pai.titulo, MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.No)
                 {
                     return;
                 }
@@ -91,6 +93,7 @@ namespace MigradorRP
 
             ConfigReader.SaveConfig();
             ConfigReader.sistema = cboEntrada.SelectedItem.ToString();
+            ConfigReader.saida = cboSaida.SelectedItem.ToString();
 
             pai.Reload(canCloseApp);
             if(confirmaAlterarModo) pai.btnCancelFiles.PerformClick();
@@ -158,6 +161,19 @@ namespace MigradorRP
             changeConfig(chk, "Produtos", "importa_balanca");
         }
 
-
+        private void cboSaida_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (ConfigReader.saida != null)
+            {
+                if (ConfigReader.saida != cboEntrada.SelectedItem.ToString())
+                {
+                    confirmaAlterarModo = true;
+                }
+                else
+                {
+                    confirmaAlterarModo = false;
+                }
+            }
+        }
     }
 }
