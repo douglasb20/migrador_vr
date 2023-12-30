@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigradorVR", "MigradorVR\MigradorRP.csproj", "{E9894C71-9935-4AF9-9930-33687E76873F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportadorAutomatec", "MigradorVR\ExportadorAutomatec.csproj", "{E9894C71-9935-4AF9-9930-33687E76873F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -65,6 +65,7 @@ namespace MigradorRP.libs
                         "cst_consumidor as cst," +
                         "pis_codigo_saida as pis," +
                         "cof_codigo_saida as cofins," +
+                        "icms," +
                         "b_exporta_peso_balanca " +
                         "from materiais as m " +
                         (ConfigReader.GetConfigValue("Produtos", "mostra_inativos") == "true" ? "" : "where sit_001 = '4'");
