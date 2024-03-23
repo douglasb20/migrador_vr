@@ -50,6 +50,7 @@ namespace MigradorRP.libs
             {
                 query += "mat_001 as id," +
                         "mat_003 as desc_pro," +
+                        (ConfigReader.sistema == "LeStore" ? "cod_ref as refer," : "") +
                         "'N'::varchar as tipo, " +
                         "ncm ," +
                         "(select uni_003 from unidades as u where u.uni_001 = m.uni_001) as unidade," +

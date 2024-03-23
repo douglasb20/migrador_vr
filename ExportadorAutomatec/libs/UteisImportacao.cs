@@ -41,6 +41,7 @@ namespace MigradorRP.libs
                         {
                             dynamic[] linha = {
                                 ++i,
+                                row["refer"],
                                 row["desc_pro"],
                                 'N',
                                 row["csosn"].ToString() == "500" ? "2" : "1",
@@ -68,8 +69,8 @@ namespace MigradorRP.libs
                                 "",
                                 "",
                                 "",
+                                ConfigReader.sistema == "LeStore" ? row["refer"] : "",
                             };
-
 
                             string newLine = string.Join(";", linha);
                             csv.AppendLine(newLine);
